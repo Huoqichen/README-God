@@ -2,7 +2,8 @@
 
 [English](./README.sample.md) | 简体中文
 
-用一个 CLI 把 Markdown 笔记构建成小型静态站点。
+<p align="center"><strong>用一个 CLI 把 Markdown 笔记构建成小型静态站点。</strong></p>
+<p align="center">一次编写，快速预览，干净发布。</p>
 
 ## 功能
 - 将 Markdown 笔记转换为静态站点。

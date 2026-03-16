@@ -2,7 +2,8 @@
 
 English | [简体中文](./README.sample.zh-CN.md)
 
-Turn Markdown notes into a small static site from one CLI.
+<p align="center"><strong>Turn Markdown notes into a small static site from one CLI.</strong></p>
+<p align="center">Write once. Preview fast. Ship clean docs.</p>
 
 ## Features
 - Convert Markdown notes into a static site.

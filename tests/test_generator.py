@@ -36,6 +36,7 @@ commands:
 
     assert context.title == "Demo App"
     assert context.description == "A clean demo."
+    assert context.tagline == "Minimal setup. Clear project overview."
     assert context.repo_slug == "acme/demo-app"
     assert context.features == ["Feature A"]
     assert context.commands[0].name == "demo run"
@@ -44,8 +45,9 @@ commands:
 def test_generate_readmes_writes_both_languages(tmp_path: Path) -> None:
     (tmp_path / ".readme-god.yml").write_text(
         """
-title: Sample Repo
+        title: Sample Repo
 description: Sample description.
+tagline: Short and sharp.
 repo_slug: OWNER/REPO
 cli_name: sample
 features:
@@ -74,6 +76,7 @@ license: MIT
     assert "[English](../README.md)" in readme_zh
     assert "https://api.star-history.com/svg?repos=OWNER/REPO&type=Date" in readme_en
     assert "Sample Repo" in readme_en
+    assert "Short and sharp." in readme_en
     assert "Welcome contributions." in readme_en
 
 
@@ -82,6 +85,8 @@ def test_build_template_context_serializes_commands() -> None:
         title="Demo",
         description="Short description.",
         description_zh="简短描述。",
+        tagline="Short tagline.",
+        tagline_zh="简短副标题。",
         repo_slug="OWNER/REPO",
         cli_name="demo",
         features=["Fast"],

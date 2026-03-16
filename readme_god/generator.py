@@ -20,6 +20,8 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
         "title": context.title,
         "description": context.description,
         "description_zh": context.description_zh,
+        "tagline": context.tagline,
+        "tagline_zh": context.tagline_zh,
         "repo_slug": context.repo_slug,
         "cli_name": context.cli_name,
         "features": context.features,

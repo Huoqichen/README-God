@@ -1,6 +1,8 @@
 title: README-God
-description: Generate GitHub-ready bilingual READMEs from any repository.
-description_zh: 从任意仓库生成适合 GitHub 的双语 README。
+description: Generate beautiful GitHub READMEs automatically.
+description_zh: 自动生成漂亮的 GitHub README。
+tagline: One command. Professional README.
+tagline_zh: 一条命令，专业 README。
 repo_slug: Huoqichen/README-God
 cli_name: readme-god
 features:

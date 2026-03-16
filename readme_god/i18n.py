@@ -30,6 +30,11 @@ DEFAULT_DESCRIPTION = {
     "zh-CN": "从仓库生成适合 GitHub 的 README。",
 }
 
+DEFAULT_TAGLINE = {
+    "en": "Minimal setup. Clear project overview.",
+    "zh-CN": "最少配置，清晰呈现项目。",
+}
+
 DEFAULT_ROADMAP = {
     "en": [
         "Improve repo signal detection.",

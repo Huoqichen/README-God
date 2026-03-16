@@ -2,7 +2,8 @@
 
 [English](../README.md) | 简体中文
 
-从任意仓库生成适合 GitHub 的双语 README。
+<p align="center"><strong>自动生成漂亮的 GitHub README。</strong></p>
+<p align="center">一条命令，专业 README。</p>
 
 ## 功能
 - 扫描仓库元信息并推断清晰的 README 结构。

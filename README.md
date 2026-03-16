@@ -2,7 +2,8 @@
 
 English | [简体中文](./docs/README.zh-CN.md)
 
-Generate GitHub-ready bilingual READMEs from any repository.
+<p align="center"><strong>Generate beautiful GitHub READMEs automatically.</strong></p>
+<p align="center">One command. Professional README.</p>
 
 ## Features
 - Scan repo metadata and infer a clean README structure.
