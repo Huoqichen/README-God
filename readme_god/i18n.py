@@ -35,6 +35,8 @@ DEFAULT_TAGLINE = {
     "zh-CN": "最少配置，清晰呈现项目。",
 }
 
+DEFAULT_PLATFORMS = ["Cross-platform"]
+
 DEFAULT_ROADMAP = {
     "en": [
         "Improve repo signal detection.",

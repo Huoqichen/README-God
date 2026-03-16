@@ -4,6 +4,14 @@ English | [简体中文](./README.sample.zh-CN.md)
 
 <p align="center"><strong>Turn Markdown notes into a small static site from one CLI.</strong></p>
 <p align="center">Write once. Preview fast. Ship clean docs.</p>
+<p align="center">
+  <img src="https://img.shields.io/github/stars/OWNER/REPO?style=flat-square" alt="GitHub Stars">
+  <img src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280?style=flat-square" alt="Platform">
+</p>
+<p align="center">
+  <a href="./README.sample.zh-CN.md">简体中文</a> | 繁體中文 | Español | Deutsch | Français | 日本語
+</p>
 
 ## Features
 - Convert Markdown notes into a static site.

@@ -4,6 +4,14 @@
 
 <p align="center"><strong>自动生成漂亮的 GitHub README。</strong></p>
 <p align="center">一条命令，专业 README。</p>
+<p align="center">
+  <a href="https://github.com/Huoqichen/README-God/stargazers"><img src="https://img.shields.io/github/stars/Huoqichen/README-God?style=flat-square" alt="GitHub Stars"></a>
+  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square" alt="License"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280?style=flat-square" alt="Platform">
+</p>
+<p align="center">
+  简体中文 | 繁體中文 | Español | Deutsch | Français | 日本語
+</p>
 
 ## 功能
 - 扫描仓库元信息并推断清晰的 README 结构。

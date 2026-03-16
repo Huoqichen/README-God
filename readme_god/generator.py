@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from urllib.parse import quote
 
 from readme_god.scanner import RepositoryContext, scan_repository
 from readme_god.templates import render_template
@@ -16,12 +17,17 @@ class GeneratedFiles:
 
 
 def build_template_context(context: RepositoryContext) -> dict[str, object]:
+    platform_label = " | ".join(context.platforms)
+    encoded_license = quote(context.license_name, safe="")
+    encoded_platform = quote(platform_label, safe="")
+
     return {
         "title": context.title,
         "description": context.description,
         "description_zh": context.description_zh,
         "tagline": context.tagline,
         "tagline_zh": context.tagline_zh,
+        "platforms": context.platforms,
         "repo_slug": context.repo_slug,
         "cli_name": context.cli_name,
         "features": context.features,
@@ -35,6 +41,10 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
         "contributing_en": context.contributing_en,
         "contributing_zh": context.contributing_zh,
         "license_name": context.license_name,
+        "stars_badge_url": f"https://img.shields.io/github/stars/{context.repo_slug}?style=flat-square",
+        "stars_link_url": f"https://github.com/{context.repo_slug}/stargazers",
+        "license_badge_url": f"https://img.shields.io/badge/license-{encoded_license}-2563eb?style=flat-square",
+        "platform_badge_url": f"https://img.shields.io/badge/platform-{encoded_platform}-6b7280?style=flat-square",
     }
 
 

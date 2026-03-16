@@ -4,6 +4,14 @@ English | [简体中文](./docs/README.zh-CN.md)
 
 <p align="center"><strong>Generate beautiful GitHub READMEs automatically.</strong></p>
 <p align="center">One command. Professional README.</p>
+<p align="center">
+  <a href="https://github.com/Huoqichen/README-God/stargazers"><img src="https://img.shields.io/github/stars/Huoqichen/README-God?style=flat-square" alt="GitHub Stars"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square" alt="License"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280?style=flat-square" alt="Platform">
+</p>
+<p align="center">
+  <a href="./docs/README.zh-CN.md">简体中文</a> | 繁體中文 | Español | Deutsch | Français | 日本語
+</p>
 
 ## Features
 - Scan repo metadata and infer a clean README structure.
