@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import webbrowser
 
 import typer
 from rich.console import Console
@@ -111,6 +112,7 @@ def preview(
         resolve_path=True,
         help="Output directory for the cloned repo and preview page.",
     ),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Open the local preview in the default browser."),
 ) -> None:
     """Clone a GitHub repository, generate README files, and build a local preview."""
     try:
@@ -132,6 +134,8 @@ def preview(
             title="Preview Ready",
         )
     )
+    if open_browser:
+        webbrowser.open(preview_files.html_preview.resolve().as_uri())
 
 
 def main() -> None:

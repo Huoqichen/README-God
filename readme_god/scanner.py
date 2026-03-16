@@ -8,6 +8,7 @@ import json
 import re
 import subprocess
 import tomllib
+from urllib.parse import unquote
 from typing import Any
 
 import yaml
@@ -25,6 +26,21 @@ class CommandInfo:
 
 
 @dataclass(slots=True)
+class ReadmeInsights:
+    title: str | None = None
+    description: str | None = None
+    tagline: str | None = None
+    features: list[str] = field(default_factory=list)
+    installation: list[str] = field(default_factory=list)
+    usage: list[str] = field(default_factory=list)
+    commands: list[CommandInfo] = field(default_factory=list)
+    roadmap: list[str] = field(default_factory=list)
+    contributing: str | None = None
+    badge_label: str | None = None
+    badge_values: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class RepositoryContext:
     title: str
     description: str
@@ -32,6 +48,8 @@ class RepositoryContext:
     tagline: str
     tagline_zh: str
     languages: list[str]
+    badge_label: str
+    badge_values: list[str]
     repo_slug: str
     cli_name: str | None
     features: list[str]
@@ -65,24 +83,27 @@ def scan_repository(repo_path: Path) -> RepositoryContext:
     pyproject = _load_pyproject(repo_path)
     package_json = _load_package_json(repo_path)
     git_slug = _detect_git_slug(repo_path)
+    readme_en = _load_readme_insights(repo_path / "README.md")
+    readme_zh = _load_readme_insights(repo_path / "docs" / "README.zh-CN.md")
 
-    title = _pick_title(repo_path, config, pyproject, package_json)
-    description = _pick_description(config, pyproject, package_json)
-    description_zh = _pick_description_zh(config, description)
-    tagline = _pick_tagline(config)
-    tagline_zh = _pick_tagline_zh(config, tagline)
+    title = _pick_title(repo_path, config, pyproject, package_json, readme_en)
+    description = _pick_description(config, pyproject, package_json, readme_en)
+    description_zh = _pick_description_zh(config, description, readme_zh)
+    tagline = _pick_tagline(config, readme_en)
+    tagline_zh = _pick_tagline_zh(config, tagline, readme_zh)
     detected_languages = _detect_languages(repo_path)
-    languages = _pick_languages(config, detected_languages)
+    languages = _pick_languages(config, detected_languages, readme_en)
+    badge_label, badge_values = _pick_badge(config, languages, readme_en)
     repo_slug = str(config.get("repo_slug") or git_slug or "OWNER/REPO")
     cli_name = str(config.get("cli_name") or _detect_cli_name(pyproject, package_json) or "").strip() or None
-    features = _pick_features(repo_path, config, cli_name)
-    features_zh = _pick_features_zh(config, features)
-    installation = _pick_installation(config, pyproject, package_json)
-    usage = _pick_usage(config, cli_name, pyproject)
-    commands = _pick_commands(config, cli_name)
-    commands_zh = _pick_commands_zh(config, commands)
-    roadmap_en, roadmap_zh = _pick_roadmap(config)
-    contributing_en, contributing_zh = _pick_contributing(config)
+    features = _pick_features(repo_path, config, cli_name, readme_en, languages)
+    features_zh = _pick_features_zh(config, features, readme_zh)
+    installation = _pick_installation(config, pyproject, package_json, readme_en)
+    usage = _pick_usage(config, cli_name, pyproject, readme_en)
+    commands = _pick_commands(config, cli_name, readme_en, usage)
+    commands_zh = _pick_commands_zh(config, commands, readme_zh)
+    roadmap_en, roadmap_zh = _pick_roadmap(config, readme_en, readme_zh)
+    contributing_en, contributing_zh = _pick_contributing(config, readme_en, readme_zh)
     license_name = _pick_license(repo_path, config, pyproject)
 
     return RepositoryContext(
@@ -92,6 +113,8 @@ def scan_repository(repo_path: Path) -> RepositoryContext:
         tagline=tagline,
         tagline_zh=tagline_zh,
         languages=languages,
+        badge_label=badge_label,
+        badge_values=badge_values,
         repo_slug=repo_slug,
         cli_name=cli_name,
         features=features,
@@ -114,8 +137,9 @@ def build_init_config(repo_path: Path) -> str:
     repo_path = repo_path.resolve()
     pyproject = _load_pyproject(repo_path)
     package_json = _load_package_json(repo_path)
-    title = _pick_title(repo_path, {}, pyproject, package_json)
-    description = _pick_description({}, pyproject, package_json)
+    readme = _load_readme_insights(repo_path / "README.md")
+    title = _pick_title(repo_path, {}, pyproject, package_json, readme)
+    description = _pick_description({}, pyproject, package_json, readme)
     cli_name = _detect_cli_name(pyproject, package_json) or "your-cli"
     repo_slug = _detect_git_slug(repo_path) or "OWNER/REPO"
 
@@ -126,6 +150,8 @@ def build_init_config(repo_path: Path) -> str:
         "tagline": "",
         "tagline_zh": "",
         "languages": [],
+        "badge_label": "",
+        "badge_values": [],
         "repo_slug": repo_slug,
         "cli_name": cli_name,
         "features": [
@@ -172,9 +198,11 @@ def _load_package_json(repo_path: Path) -> dict[str, Any]:
     return json.loads(package_json_path.read_text(encoding="utf-8"))
 
 
-def _pick_title(repo_path: Path, config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any]) -> str:
+def _pick_title(repo_path: Path, config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any], readme: ReadmeInsights) -> str:
     if config.get("title"):
         return str(config["title"]).strip()
+    if readme.title:
+        return readme.title
     project = pyproject.get("project", {})
     if project.get("name"):
         return _humanize_name(str(project["name"]))
@@ -183,9 +211,11 @@ def _pick_title(repo_path: Path, config: dict[str, Any], pyproject: dict[str, An
     return _humanize_name(repo_path.name)
 
 
-def _pick_description(config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any]) -> str:
+def _pick_description(config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any], readme: ReadmeInsights) -> str:
     if config.get("description"):
         return str(config["description"]).strip()
+    if readme.description:
+        return readme.description
     project = pyproject.get("project", {})
     if project.get("description"):
         return str(project["description"]).strip()
@@ -194,9 +224,11 @@ def _pick_description(config: dict[str, Any], pyproject: dict[str, Any], package
     return DEFAULT_DESCRIPTION["en"]
 
 
-def _pick_description_zh(config: dict[str, Any], description: str) -> str:
+def _pick_description_zh(config: dict[str, Any], description: str, readme: ReadmeInsights) -> str:
     if config.get("description_zh"):
         return str(config["description_zh"]).strip()
+    if readme.description:
+        return readme.description
     mapping = {
         "Generate clean bilingual GitHub README files from a repository.": "从仓库信息生成简洁、双语、适合 GitHub 的 README。",
         "Generate GitHub-ready bilingual READMEs from any repository.": "从任意仓库生成适合 GitHub 的双语 README。",
@@ -206,15 +238,19 @@ def _pick_description_zh(config: dict[str, Any], description: str) -> str:
     return mapping.get(description, description)
 
 
-def _pick_tagline(config: dict[str, Any]) -> str:
+def _pick_tagline(config: dict[str, Any], readme: ReadmeInsights) -> str:
     if config.get("tagline"):
         return str(config["tagline"]).strip()
+    if readme.tagline:
+        return readme.tagline
     return DEFAULT_TAGLINE["en"]
 
 
-def _pick_tagline_zh(config: dict[str, Any], tagline: str) -> str:
+def _pick_tagline_zh(config: dict[str, Any], tagline: str, readme: ReadmeInsights) -> str:
     if config.get("tagline_zh"):
         return str(config["tagline_zh"]).strip()
+    if readme.tagline:
+        return readme.tagline
     mapping = {
         "One command. Professional README.": "一条命令，专业 README。",
         DEFAULT_TAGLINE["en"]: DEFAULT_TAGLINE["zh-CN"],
@@ -222,22 +258,37 @@ def _pick_tagline_zh(config: dict[str, Any], tagline: str) -> str:
     return mapping.get(tagline, tagline)
 
 
-def _pick_languages(config: dict[str, Any], detected_languages: list[str]) -> list[str]:
+def _pick_languages(config: dict[str, Any], detected_languages: list[str], readme: ReadmeInsights) -> list[str]:
     configured = _string_list(config.get("languages"))
     if configured:
         return configured
+    if readme.badge_values:
+        return readme.badge_values
     if detected_languages:
         return detected_languages[:3]
     return DEFAULT_LANGUAGES
 
 
-def _pick_features(repo_path: Path, config: dict[str, Any], cli_name: str | None) -> list[str]:
+def _pick_badge(config: dict[str, Any], languages: list[str], readme: ReadmeInsights) -> tuple[str, list[str]]:
+    if readme.badge_label and readme.badge_values:
+        return readme.badge_label, readme.badge_values
+    return "language", languages
+
+
+def _pick_features(
+    repo_path: Path,
+    config: dict[str, Any],
+    cli_name: str | None,
+    readme: ReadmeInsights,
+    languages: list[str],
+) -> list[str]:
     configured = _string_list(config.get("features"))
     if configured:
         return configured
+    if readme.features:
+        return readme.features[:6]
 
     features: list[str] = []
-    languages = _detect_languages(repo_path)
     if languages:
         features.append(f"Built with {', '.join(languages[:3])}.")
     if cli_name:
@@ -253,17 +304,21 @@ def _pick_features(repo_path: Path, config: dict[str, Any], cli_name: str | None
     return features[:5]
 
 
-def _pick_features_zh(config: dict[str, Any], features: list[str]) -> list[str]:
+def _pick_features_zh(config: dict[str, Any], features: list[str], readme: ReadmeInsights) -> list[str]:
     configured = _string_list(config.get("features_zh"))
     if configured:
         return configured
+    if readme.features:
+        return readme.features[:6]
     return [translate_feature(item) for item in features]
 
 
-def _pick_installation(config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any]) -> list[str]:
+def _pick_installation(config: dict[str, Any], pyproject: dict[str, Any], package_json: dict[str, Any], readme: ReadmeInsights) -> list[str]:
     configured = _string_list(config.get("installation"))
     if configured:
         return configured
+    if readme.installation:
+        return readme.installation
 
     project = pyproject.get("project", {})
     if project.get("name"):
@@ -278,10 +333,12 @@ def _pick_installation(config: dict[str, Any], pyproject: dict[str, Any], packag
     return ["Clone the repository.", "Install the project dependencies."]
 
 
-def _pick_usage(config: dict[str, Any], cli_name: str | None, pyproject: dict[str, Any]) -> list[str]:
+def _pick_usage(config: dict[str, Any], cli_name: str | None, pyproject: dict[str, Any], readme: ReadmeInsights) -> list[str]:
     configured = _string_list(config.get("usage"))
     if configured:
         return configured
+    if readme.usage:
+        return readme.usage
     if cli_name:
         return [f"{cli_name} --help"]
     project = pyproject.get("project", {})
@@ -291,7 +348,7 @@ def _pick_usage(config: dict[str, Any], cli_name: str | None, pyproject: dict[st
     return ["Add a concrete usage example in .readme-god.yml."]
 
 
-def _pick_commands(config: dict[str, Any], cli_name: str | None) -> list[CommandInfo]:
+def _pick_commands(config: dict[str, Any], cli_name: str | None, readme: ReadmeInsights, usage: list[str]) -> list[CommandInfo]:
     raw_commands = config.get("commands")
     commands: list[CommandInfo] = []
 
@@ -306,12 +363,17 @@ def _pick_commands(config: dict[str, Any], cli_name: str | None) -> list[Command
 
     if commands:
         return commands
+    if readme.commands:
+        return readme.commands[:3]
+    inferred = _infer_commands_from_usage(usage, cli_name)
+    if inferred:
+        return inferred
     if cli_name:
         return [CommandInfo(name=f"{cli_name} --help", description="Show available commands and options.")]
     return [CommandInfo(name="N/A", description="No dedicated CLI entry point detected.")]
 
 
-def _pick_commands_zh(config: dict[str, Any], commands: list[CommandInfo]) -> list[CommandInfo]:
+def _pick_commands_zh(config: dict[str, Any], commands: list[CommandInfo], readme: ReadmeInsights) -> list[CommandInfo]:
     raw_commands = config.get("commands_zh")
     localized: list[CommandInfo] = []
 
@@ -326,21 +388,29 @@ def _pick_commands_zh(config: dict[str, Any], commands: list[CommandInfo]) -> li
 
     if localized:
         return localized
+    if readme.commands:
+        return [CommandInfo(name=command.name, description=translate_command_description(command.description)) for command in readme.commands[:3]]
     return [CommandInfo(name=command.name, description=translate_command_description(command.description)) for command in commands]
 
 
-def _pick_roadmap(config: dict[str, Any]) -> tuple[list[str], list[str]]:
+def _pick_roadmap(config: dict[str, Any], readme: ReadmeInsights, readme_zh: ReadmeInsights) -> tuple[list[str], list[str]]:
     roadmap = _string_list(config.get("roadmap"))
     if roadmap:
         zh = [translate_roadmap_item(item) for item in roadmap]
         return roadmap, zh
+    if readme.roadmap:
+        zh = readme_zh.roadmap[: len(readme.roadmap)] if readme_zh.roadmap else [translate_roadmap_item(item) for item in readme.roadmap]
+        return readme.roadmap, zh
     return DEFAULT_ROADMAP["en"], DEFAULT_ROADMAP["zh-CN"]
 
 
-def _pick_contributing(config: dict[str, Any]) -> tuple[str, str]:
+def _pick_contributing(config: dict[str, Any], readme: ReadmeInsights, readme_zh: ReadmeInsights) -> tuple[str, str]:
     contributing = str(config.get("contributing", "")).strip()
     if contributing:
         return contributing, translate_contributing(contributing)
+    if readme.contributing:
+        zh = readme_zh.contributing or translate_contributing(readme.contributing)
+        return readme.contributing, zh
     return DEFAULT_CONTRIBUTING["en"], DEFAULT_CONTRIBUTING["zh-CN"]
 
 
@@ -417,6 +487,202 @@ def _detect_languages(repo_path: Path) -> list[str]:
     return seen
 
 
+def _load_readme_insights(path: Path) -> ReadmeInsights:
+    if not path.exists():
+        return ReadmeInsights()
+
+    content = path.read_text(encoding="utf-8")
+    sections = _split_markdown_sections(content)
+    title = _extract_title(content)
+    hero_description, hero_tagline = _extract_hero(content)
+    badge_label, badge_values = _extract_badge(content)
+
+    installation_body = sections.get("installation") or sections.get("安装") or ""
+    usage_body = sections.get("usage") or sections.get("用法") or sections.get("使用") or sections.get("demo") or sections.get("演示") or ""
+    features_body = sections.get("features") or sections.get("特性") or sections.get("功能") or ""
+    roadmap_body = sections.get("roadmap") or sections.get("current status") or sections.get("当前状态") or ""
+    contributing_body = sections.get("contributing") or sections.get("贡献") or ""
+
+    usage_lines = _extract_usage_lines(usage_body, limit=4)
+    feature_lines = _extract_bullets(features_body, limit=5)
+
+    return ReadmeInsights(
+        title=title,
+        description=hero_description,
+        tagline=hero_tagline,
+        features=feature_lines,
+        installation=_extract_shell_code_lines(installation_body, limit=6),
+        usage=usage_lines,
+        commands=_infer_commands_from_usage(usage_lines, None),
+        roadmap=_extract_roadmap_items(roadmap_body),
+        contributing=_extract_first_paragraph(contributing_body),
+        badge_label=badge_label,
+        badge_values=badge_values,
+    )
+
+
+def _split_markdown_sections(content: str) -> dict[str, str]:
+    matches = list(re.finditer(r"(?m)^##\s+(.+?)\s*$", content))
+    sections: dict[str, str] = {}
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(content)
+        name = match.group(1).strip().lower()
+        sections[name] = content[start:end].strip()
+    return sections
+
+
+def _extract_title(content: str) -> str | None:
+    h1_match = re.search(r"<h1>(.*?)</h1>", content, flags=re.IGNORECASE | re.DOTALL)
+    if h1_match:
+        return _strip_html(h1_match.group(1)).strip()
+    markdown_match = re.search(r"(?m)^#\s+(.+?)\s*$", content)
+    if markdown_match:
+        return markdown_match.group(1).strip()
+    return None
+
+
+def _extract_hero(content: str) -> tuple[str | None, str | None]:
+    paragraphs = re.findall(r"<p>(.*?)</p>", content, flags=re.IGNORECASE | re.DOTALL)
+    description: str | None = None
+    tagline: str | None = None
+    for raw in paragraphs:
+        if "<img" in raw.lower():
+            continue
+        text = _strip_html(raw).strip()
+        if not text:
+            continue
+        if description is None:
+            description = text
+            continue
+        tagline = text
+        break
+
+    if description:
+        return description, tagline
+
+    lines = [line.strip() for line in content.splitlines() if line.strip()]
+    prose_lines = [line for line in lines if not line.startswith("#") and not line.startswith("-") and "<img" not in line and "<a " not in line]
+    if prose_lines:
+        description = _strip_html(prose_lines[0])
+        tagline = _strip_html(prose_lines[1]) if len(prose_lines) > 1 else None
+    return description, tagline
+
+
+def _extract_badge(content: str) -> tuple[str | None, list[str]]:
+    match = re.search(r"badge/(platform|language)-([^\"?]+)", content, flags=re.IGNORECASE)
+    if not match:
+        return None, []
+    label = match.group(1).lower()
+    raw_value = match.group(2).split("?", maxsplit=1)[0]
+    value = unquote(raw_value.rsplit("-", maxsplit=1)[0])
+    parts = [part.strip() for part in value.split("|") if part.strip()]
+    return label, parts
+
+
+def _extract_bullets(content: str, limit: int) -> list[str]:
+    bullets = [match.group(1).strip() for match in re.finditer(r"(?m)^\s*-\s+(.*)$", content)]
+    bullets = [item for item in bullets if item and not item.endswith(":") and not item.endswith("：")]
+    return bullets[:limit]
+
+
+def _extract_code_lines(content: str, limit: int) -> list[str]:
+    lines: list[str] = []
+    for block in re.findall(r"```(?:\w+)?\n(.*?)```", content, flags=re.DOTALL):
+        for raw_line in block.splitlines():
+            line = raw_line.strip()
+            if not line or line in lines:
+                continue
+            lines.append(line)
+            if len(lines) >= limit:
+                return lines
+    return lines
+
+
+def _extract_shell_code_lines(content: str, limit: int) -> list[str]:
+    lines: list[str] = []
+    for language, block in _extract_code_blocks(content):
+        if language not in {"bash", "sh", "shell", ""}:
+            continue
+        for raw_line in block.splitlines():
+            line = raw_line.strip()
+            if not line or line in lines:
+                continue
+            lines.append(line)
+            if len(lines) >= limit:
+                return lines
+    return lines or _extract_code_lines(content, limit)
+
+
+def _extract_usage_lines(content: str, limit: int) -> list[str]:
+    for language, block in _extract_code_blocks(content):
+        if language and language not in {"bash", "sh", "shell"}:
+            continue
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if lines:
+            return lines[:limit]
+    return _extract_code_lines(content, limit)
+
+
+def _extract_code_blocks(content: str) -> list[tuple[str, str]]:
+    blocks: list[tuple[str, str]] = []
+    for match in re.finditer(r"```(\w+)?\n(.*?)```", content, flags=re.DOTALL):
+        language = (match.group(1) or "").strip().lower()
+        blocks.append((language, match.group(2)))
+    return blocks
+
+
+def _extract_roadmap_items(content: str) -> list[str]:
+    preferred = re.search(r"Still good next upgrades:\s*(.*)", content, flags=re.IGNORECASE | re.DOTALL)
+    if preferred:
+        return _extract_bullets(preferred.group(1), limit=4)
+    preferred_zh = re.search(r"仍然值得继续增强：\s*(.*)", content, flags=re.DOTALL)
+    if preferred_zh:
+        return _extract_bullets(preferred_zh.group(1), limit=4)
+    return _extract_bullets(content, limit=4)
+
+
+def _extract_first_paragraph(content: str) -> str | None:
+    if not content.strip():
+        return None
+    stripped = re.sub(r"```.*?```", "", content, flags=re.DOTALL)
+    for paragraph in re.split(r"\n\s*\n", stripped):
+        text = _strip_html(paragraph).strip()
+        if text and not text.startswith("-"):
+            normalized = " ".join(text.split())
+            normalized = normalized.removesuffix(":").removesuffix("：")
+            normalized = re.sub(r"\binclude[s]?$", "", normalized).strip()
+            normalized = re.sub(r"包括$", "", normalized).strip()
+            return normalized
+    return None
+
+
+def _infer_commands_from_usage(usage: list[str], cli_name: str | None) -> list[CommandInfo]:
+    commands: list[CommandInfo] = []
+    for line in usage[:3]:
+        if line.endswith(":") or line.isupper():
+            continue
+        description = "Run the project."
+        if "--help" in line:
+            description = "Show available commands and options."
+        elif "--branch" in line:
+            description = "Analyze a specific branch."
+        elif "--json-out" in line or "--mermaid-out" in line:
+            description = "Export analysis artifacts."
+        elif "https://github.com/" in line:
+            description = "Analyze a GitHub repository."
+        elif cli_name and line.startswith(cli_name):
+            description = "Run the main CLI flow."
+        commands.append(CommandInfo(name=line, description=description))
+    return commands
+
+
+def _strip_html(text: str) -> str:
+    cleaned = re.sub(r"<br\s*/?>", " ", text, flags=re.IGNORECASE)
+    cleaned = re.sub(r"<[^>]+>", "", cleaned)
+    return " ".join(cleaned.split())
+
+
 def _string_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
@@ -486,5 +752,6 @@ def translate_command_description(text: str) -> str:
         "Create a starter .readme-god.yml.": "创建起始版 .readme-god.yml。",
         "Generate bilingual README files for the current repository.": "为当前仓库生成双语 README。",
         "Generate bilingual README files for a specific repository path.": "为指定仓库路径生成双语 README。",
+        "Analyze a GitHub repository.": "分析一个 GitHub 仓库。",
     }
     return mapping.get(text, text)

@@ -102,9 +102,12 @@ def test_preview_delegates_and_prints_paths(tmp_path: Path, monkeypatch) -> None
         )
 
     monkeypatch.setattr("readme_god.cli.preview_repository", fake_preview_repository)
+    opened: list[str] = []
+    monkeypatch.setattr("readme_god.cli.webbrowser.open", lambda url: opened.append(url))
 
     result = runner.invoke(app, ["preview", "https://github.com/user/repo", "--out", str(preview_dir)])
 
     assert result.exit_code == 0
     assert "Preview Ready" in result.stdout
     assert "index.html" in result.stdout
+    assert opened
