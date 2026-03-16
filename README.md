@@ -1,13 +1,13 @@
-[English](./README.md) | [简体中文](./docs/README.zh-CN.md)
-
 # README-God
 
-Generate clean bilingual GitHub README files from a repository.
+English | [简体中文](./docs/README.zh-CN.md)
+
+Generate GitHub-ready bilingual READMEs from any repository.
 
 ## Features
-- Scan project metadata and infer concise README sections.
-- Generate English and Simplified Chinese README files together.
-- Keep output template-driven, readable, and easy to customize.
+- Scan repo metadata and infer a clean README structure.
+- Generate README.md and docs/README.zh-CN.md together.
+- Keep output concise, template-driven, and easy to refine.
 
 ## Installation
 ```bash
@@ -23,20 +23,22 @@ readme-god generate --repo .
 ```
 
 ## CLI
-- `readme-god init`: Create a starter .readme-god.yml in the target repository.
-- `readme-god generate`: Scan the current repository and write bilingual README files.
-- `readme-god generate --repo .`: Scan a specific repository path.
+| Command | Description |
+| --- | --- |
+| `readme-god init` | Create a starter .readme-god.yml. |
+| `readme-god generate` | Generate bilingual README files for the current repository. |
+| `readme-god generate --repo .` | Generate bilingual README files for a specific repository path. |
 
 ## Roadmap
-- Improve framework detection for more repository types.
-- Add custom section hooks for project-specific templates.
+- Improve repo signal detection.
+- Add more template customization points.
 
 ## Contributing
-Issues and pull requests are welcome. Keep changes small, tested, and documented.
+Issues and pull requests are welcome. Keep changes focused and tested.
 
 ## License
 MIT
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Huoqichen/README-God&type=Date)](https://star-history.com/#Huoqichen/README-God&Date)
+![Star History Chart](https://api.star-history.com/svg?repos=Huoqichen/README-God&type=Date)

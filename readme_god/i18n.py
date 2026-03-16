@@ -26,28 +26,27 @@ SECTION_TITLES = {
 }
 
 DEFAULT_DESCRIPTION = {
-    "en": "A concise README generated from repository signals.",
-    "zh-CN": "根据仓库信息生成的简洁 README。",
+    "en": "Generate a GitHub-ready README from a repository.",
+    "zh-CN": "从仓库生成适合 GitHub 的 README。",
 }
 
 DEFAULT_ROADMAP = {
     "en": [
-        "Refine project metadata and examples.",
-        "Expand automation, tests, or release tooling where needed.",
+        "Improve repo signal detection.",
+        "Add more template customization points.",
     ],
     "zh-CN": [
-        "补充更完整的项目元信息与示例。",
-        "按需扩展自动化、测试或发布流程。",
+        "改进仓库特征识别能力。",
+        "增加更多模板定制点。",
     ],
 }
 
 DEFAULT_CONTRIBUTING = {
-    "en": "Issues and pull requests are welcome. Keep changes focused and include tests or docs when relevant.",
-    "zh-CN": "欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并在合适时补充测试或文档。",
+    "en": "Issues and pull requests are welcome. Keep changes focused and tested.",
+    "zh-CN": "欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充测试。",
 }
 
 DEFAULT_LICENSE = {
     "en": "MIT",
     "zh-CN": "MIT",
 }
-

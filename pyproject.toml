@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "readme-god"
 version = "0.1.0"
-description = "Generate concise bilingual GitHub README files from a repository."
+description = "Generate GitHub-ready bilingual READMEs from any repository."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

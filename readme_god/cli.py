@@ -14,17 +14,27 @@ from readme_god.scanner import CONFIG_NAME, build_init_config
 
 app = typer.Typer(
     add_completion=False,
-    help="Generate concise bilingual README files from a repository.",
+    no_args_is_help=True,
+    help="Generate GitHub-ready README.md and docs/README.zh-CN.md from a repository.",
     rich_markup_mode="markdown",
+    context_settings={"help_option_names": ["-h", "--help"]},
 )
 console = Console()
 
 
-@app.command()
+@app.command(short_help="Create starter config.")
 def init(
-    repo: Path = typer.Option(Path("."), "--repo", exists=True, file_okay=False, dir_okay=True, resolve_path=True),
+    repo: Path = typer.Option(
+        Path("."),
+        "--repo",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+        help="Repository to initialize. Defaults to the current directory.",
+    ),
 ) -> None:
-    """Create a starter config for README generation."""
+    """Create a starter .readme-god.yml and docs directory."""
     repo = repo.resolve()
     config_path = repo / CONFIG_NAME
     if config_path.exists():
@@ -33,24 +43,42 @@ def init(
 
     config_path.write_text(build_init_config(repo), encoding="utf-8")
     (repo / "docs").mkdir(parents=True, exist_ok=True)
-    console.print(Panel.fit(f"Created {config_path.name}\nTarget repo: {repo}", title="README-God init"))
+    console.print(
+        Panel.fit(
+            "\n".join(
+                [
+                    f"Created: {config_path}",
+                    "Next: readme-god generate --repo .",
+                ]
+            ),
+            title="Initialized",
+        )
+    )
 
 
-@app.command()
+@app.command(short_help="Generate bilingual README files.")
 def generate(
-    repo: Path = typer.Option(Path("."), "--repo", exists=True, file_okay=False, dir_okay=True, resolve_path=True),
+    repo: Path = typer.Option(
+        Path("."),
+        "--repo",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+        help="Repository to scan. Defaults to the current directory.",
+    ),
 ) -> None:
-    """Scan a repository and write bilingual README files."""
+    """Generate README.md and docs/README.zh-CN.md."""
     generated = generate_readmes(repo.resolve())
     console.print(
         Panel.fit(
             "\n".join(
                 [
-                    f"English: {generated.readme_en}",
-                    f"中文: {generated.readme_zh}",
+                    f"Wrote: {generated.readme_en}",
+                    f"Wrote: {generated.readme_zh}",
                 ]
             ),
-            title="README-God generate",
+            title="Generated",
         )
     )
 

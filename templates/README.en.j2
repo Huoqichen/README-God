@@ -1,6 +1,6 @@
-[English](./README.md) | [简体中文](./docs/README.zh-CN.md)
-
 # {{ title }}
+
+English | [简体中文](./docs/README.zh-CN.md)
 
 {{ description }}
 
@@ -24,8 +24,10 @@
 ```
 
 ## CLI
+| Command | Description |
+| --- | --- |
 {% for command in commands %}
-- `{{ command.name }}`: {{ command.description }}
+| `{{ command.name }}` | {{ command.description }} |
 {% endfor %}
 
 ## Roadmap
@@ -41,5 +43,4 @@
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos={{ repo_slug }}&type=Date)](https://star-history.com/#{{ repo_slug }}&Date)
-
+![Star History Chart](https://api.star-history.com/svg?repos={{ repo_slug }}&type=Date)

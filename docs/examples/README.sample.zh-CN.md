@@ -1,13 +1,13 @@
-[English](./README.sample.md) | [简体中文](./README.sample.zh-CN.md)
-
 # Sample Repo
 
-一个用于将 Markdown 笔记转换为静态页面的轻量 CLI 工具。
+[English](./README.sample.md) | 简体中文
+
+用一个 CLI 把 Markdown 笔记构建成小型静态站点。
 
 ## 功能
-- 使用 Python 构建。
-- 提供 `sample-repo` 命令行入口。
-- 包含测试套件，便于安全迭代。
+- 将 Markdown 笔记转换为静态站点。
+- 本地预览生成结果。
+- 保持流程易于脚本化和扩展。
 
 ## 安装
 ```bash
@@ -19,11 +19,14 @@ pip install -e .
 ## 使用
 ```bash
 sample-repo build ./notes
+sample-repo serve
 ```
 
 ## 命令行
-- `sample-repo build <path>`: 从笔记目录构建静态页面。
-- `sample-repo serve`: 本地预览生成结果。
+| 命令 | 说明 |
+| --- | --- |
+| `sample-repo build <path>` | 从笔记目录构建静态页面。 |
+| `sample-repo serve` | 本地预览生成结果。 |
 
 ## 路线图
 - 增加主题定制能力。
@@ -37,4 +40,4 @@ MIT
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=OWNER/REPO&type=Date)](https://star-history.com/#OWNER/REPO&Date)
+![Star History Chart](https://api.star-history.com/svg?repos=OWNER/REPO&type=Date)

@@ -117,7 +117,7 @@ def build_init_config(repo_path: Path) -> str:
         "repo_slug": repo_slug,
         "cli_name": cli_name,
         "features": [
-            "Replace this list with the 3-5 most useful project capabilities.",
+            "Replace this list with 3-5 concrete project capabilities.",
         ],
         "features_zh": [],
         "installation": [
@@ -131,15 +131,15 @@ def build_init_config(repo_path: Path) -> str:
         "commands": [
             {
                 "name": f"{cli_name} --help",
-                "description": "Show available commands and options.",
+                "description": "Show commands and options.",
             }
         ],
         "commands_zh": [],
         "roadmap": [
-            "Add your next meaningful milestone here.",
+            "Add your next meaningful milestone.",
         ],
         "roadmap_zh": [],
-        "contributing": "Issues and pull requests are welcome. Keep changes small and well tested.",
+        "contributing": "Issues and pull requests are welcome. Keep changes focused and tested.",
         "contributing_zh": "",
         "license": _pick_license(repo_path, {}, pyproject),
     }
@@ -187,6 +187,7 @@ def _pick_description_zh(config: dict[str, Any], description: str) -> str:
         return str(config["description_zh"]).strip()
     mapping = {
         "Generate clean bilingual GitHub README files from a repository.": "从仓库信息生成简洁、双语、适合 GitHub 的 README。",
+        "Generate GitHub-ready bilingual READMEs from any repository.": "从任意仓库生成适合 GitHub 的双语 README。",
         DEFAULT_DESCRIPTION["en"]: DEFAULT_DESCRIPTION["zh-CN"],
     }
     return mapping.get(description, description)
@@ -395,6 +396,8 @@ def translate_roadmap_item(text: str) -> str:
         "Add custom section hooks for project-specific templates.": "增加面向项目定制模板的扩展节能力。",
         "Refine project metadata and examples.": "补充更完整的项目元信息与示例。",
         "Expand automation, tests, or release tooling where needed.": "按需扩展自动化、测试或发布工具。",
+        "Improve repo signal detection.": "改进仓库特征识别能力。",
+        "Add more template customization points.": "增加更多模板定制点。",
     }
     return mapping.get(text, text)
 
@@ -403,6 +406,7 @@ def translate_contributing(text: str) -> str:
     mapping = {
         "Issues and pull requests are welcome. Keep changes small, tested, and documented.": "欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充必要的测试与文档。",
         "Issues and pull requests are welcome. Keep changes focused and include tests or docs when relevant.": "欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并在合适时补充测试或文档。",
+        "Issues and pull requests are welcome. Keep changes focused and tested.": "欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充测试。",
     }
     return mapping.get(text, text)
 
@@ -412,6 +416,9 @@ def translate_feature(text: str) -> str:
         "Scan project metadata and infer concise README sections.": "扫描项目元信息并推断简洁的 README 结构。",
         "Generate English and Simplified Chinese README files together.": "同时生成英文与简体中文 README 文件。",
         "Keep output template-driven, readable, and easy to customize.": "使用模板驱动输出，方便阅读和定制。",
+        "Scan repo metadata and infer a clean README structure.": "扫描仓库元信息并推断清晰的 README 结构。",
+        "Generate README.md and docs/README.zh-CN.md together.": "同时生成 README.md 和 docs/README.zh-CN.md。",
+        "Keep output concise, template-driven, and easy to refine.": "输出简洁、模板化，便于继续调整。",
         "Built with Python.": "使用 Python 构建。",
         "Includes a test suite for safer iteration.": "包含测试套件，便于安全迭代。",
         "Keeps project documentation close to the codebase.": "将文档与代码放在一起维护。",
@@ -428,9 +435,13 @@ def translate_feature(text: str) -> str:
 def translate_command_description(text: str) -> str:
     mapping = {
         "Show available commands and options.": "显示可用命令与选项。",
+        "Show commands and options.": "显示命令与选项。",
         "No dedicated CLI entry point detected.": "未检测到独立的命令行入口。",
         "Create a starter .readme-god.yml in the target repository.": "在目标仓库中创建一个起始版 .readme-god.yml 配置文件。",
         "Scan the current repository and write bilingual README files.": "扫描当前仓库并写出双语 README 文件。",
         "Scan a specific repository path.": "扫描指定仓库路径。",
+        "Create a starter .readme-god.yml.": "创建起始版 .readme-god.yml。",
+        "Generate bilingual README files for the current repository.": "为当前仓库生成双语 README。",
+        "Generate bilingual README files for a specific repository path.": "为指定仓库路径生成双语 README。",
     }
     return mapping.get(text, text)

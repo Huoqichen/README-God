@@ -1,16 +1,16 @@
 title: README-God
-description: Generate clean bilingual GitHub README files from a repository.
-description_zh: 从仓库信息生成简洁、双语、适合 GitHub 的 README。
+description: Generate GitHub-ready bilingual READMEs from any repository.
+description_zh: 从任意仓库生成适合 GitHub 的双语 README。
 repo_slug: Huoqichen/README-God
 cli_name: readme-god
 features:
-  - Scan project metadata and infer concise README sections.
-  - Generate English and Simplified Chinese README files together.
-  - Keep output template-driven, readable, and easy to customize.
+  - Scan repo metadata and infer a clean README structure.
+  - Generate README.md and docs/README.zh-CN.md together.
+  - Keep output concise, template-driven, and easy to refine.
 features_zh:
-  - 扫描项目元信息并推断简洁的 README 结构。
-  - 同时生成英文与简体中文 README 文件。
-  - 使用模板驱动输出，方便阅读和定制。
+  - 扫描仓库元信息并推断清晰的 README 结构。
+  - 同时生成 README.md 和 docs/README.zh-CN.md。
+  - 输出简洁、模板化，便于继续调整。
 installation:
   - python -m venv .venv
   - .venv\Scripts\activate
@@ -20,24 +20,24 @@ usage:
   - readme-god generate --repo .
 commands:
   - name: readme-god init
-    description: Create a starter .readme-god.yml in the target repository.
+    description: Create a starter .readme-god.yml.
   - name: readme-god generate
-    description: Scan the current repository and write bilingual README files.
+    description: Generate bilingual README files for the current repository.
   - name: readme-god generate --repo .
-    description: Scan a specific repository path.
+    description: Generate bilingual README files for a specific repository path.
 commands_zh:
   - name: readme-god init
-    description: 在目标仓库中创建一个起始版 .readme-god.yml 配置文件。
+    description: 创建起始版 .readme-god.yml。
   - name: readme-god generate
-    description: 扫描当前仓库并写出双语 README 文件。
+    description: 为当前仓库生成双语 README。
   - name: readme-god generate --repo .
-    description: 扫描指定仓库路径。
+    description: 为指定仓库路径生成双语 README。
 roadmap:
-  - Improve framework detection for more repository types.
-  - Add custom section hooks for project-specific templates.
+  - Improve repo signal detection.
+  - Add more template customization points.
 roadmap_zh:
-  - 增强对更多仓库类型和框架的识别能力。
-  - 增加面向项目定制模板的扩展节能力。
-contributing: Issues and pull requests are welcome. Keep changes small, tested, and documented.
-contributing_zh: 欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充必要的测试与文档。
+  - 改进仓库特征识别能力。
+  - 增加更多模板定制点。
+contributing: Issues and pull requests are welcome. Keep changes focused and tested.
+contributing_zh: 欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充测试。
 license: MIT
