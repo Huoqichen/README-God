@@ -1,0 +1,44 @@
+[English](../README.md) | [简体中文](./README.zh-CN.md)
+
+# {{ title }}
+
+{{ description_zh }}
+
+## 功能
+{% for item in features_zh %}
+- {{ item }}
+{% endfor %}
+
+## 安装
+```bash
+{% for item in installation %}
+{{ item }}
+{% endfor %}
+```
+
+## 使用
+```bash
+{% for item in usage %}
+{{ item }}
+{% endfor %}
+```
+
+## 命令行
+{% for command in commands_zh %}
+- `{{ command.name }}`: {{ command.description }}
+{% endfor %}
+
+## 路线图
+{% for item in roadmap_zh %}
+- {{ item }}
+{% endfor %}
+
+## 贡献
+{{ contributing_zh }}
+
+## 许可证
+{{ license_name }}
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos={{ repo_slug }}&type=Date)](https://star-history.com/#{{ repo_slug }}&Date)

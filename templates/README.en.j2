@@ -1,0 +1,45 @@
+[English](./README.md) | [简体中文](./docs/README.zh-CN.md)
+
+# {{ title }}
+
+{{ description }}
+
+## Features
+{% for item in features %}
+- {{ item }}
+{% endfor %}
+
+## Installation
+```bash
+{% for item in installation %}
+{{ item }}
+{% endfor %}
+```
+
+## Usage
+```bash
+{% for item in usage %}
+{{ item }}
+{% endfor %}
+```
+
+## CLI
+{% for command in commands %}
+- `{{ command.name }}`: {{ command.description }}
+{% endfor %}
+
+## Roadmap
+{% for item in roadmap_en %}
+- {{ item }}
+{% endfor %}
+
+## Contributing
+{{ contributing_en }}
+
+## License
+{{ license_name }}
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos={{ repo_slug }}&type=Date)](https://star-history.com/#{{ repo_slug }}&Date)
+

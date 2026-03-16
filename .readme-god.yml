@@ -1,0 +1,43 @@
+title: README-God
+description: Generate clean bilingual GitHub README files from a repository.
+description_zh: 从仓库信息生成简洁、双语、适合 GitHub 的 README。
+repo_slug: Huoqichen/README-God
+cli_name: readme-god
+features:
+  - Scan project metadata and infer concise README sections.
+  - Generate English and Simplified Chinese README files together.
+  - Keep output template-driven, readable, and easy to customize.
+features_zh:
+  - 扫描项目元信息并推断简洁的 README 结构。
+  - 同时生成英文与简体中文 README 文件。
+  - 使用模板驱动输出，方便阅读和定制。
+installation:
+  - python -m venv .venv
+  - .venv\Scripts\activate
+  - pip install -e .
+usage:
+  - readme-god init
+  - readme-god generate --repo .
+commands:
+  - name: readme-god init
+    description: Create a starter .readme-god.yml in the target repository.
+  - name: readme-god generate
+    description: Scan the current repository and write bilingual README files.
+  - name: readme-god generate --repo .
+    description: Scan a specific repository path.
+commands_zh:
+  - name: readme-god init
+    description: 在目标仓库中创建一个起始版 .readme-god.yml 配置文件。
+  - name: readme-god generate
+    description: 扫描当前仓库并写出双语 README 文件。
+  - name: readme-god generate --repo .
+    description: 扫描指定仓库路径。
+roadmap:
+  - Improve framework detection for more repository types.
+  - Add custom section hooks for project-specific templates.
+roadmap_zh:
+  - 增强对更多仓库类型和框架的识别能力。
+  - 增加面向项目定制模板的扩展节能力。
+contributing: Issues and pull requests are welcome. Keep changes small, tested, and documented.
+contributing_zh: 欢迎提交 Issue 和 Pull Request。请保持改动聚焦，并补充必要的测试与文档。
+license: MIT

@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "readme-god"
+version = "0.1.0"
+description = "Generate concise bilingual GitHub README files from a repository."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "Huoqichen" }
+]
+dependencies = [
+  "jinja2>=3.1.4",
+  "pyyaml>=6.0.2",
+  "rich>=13.7.1",
+  "typer>=0.12.3",
+]
+keywords = ["readme", "documentation", "github", "cli", "generator"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Documentation",
+  "Topic :: Software Development :: Documentation",
+]
+
+[project.scripts]
+readme-god = "readme_god.cli:app"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["readme_god*"]
+
+[tool.setuptools.package-data]
+readme_god = ["template_assets/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
