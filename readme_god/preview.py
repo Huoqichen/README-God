@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 from urllib.parse import urlparse
 
@@ -28,7 +30,7 @@ def preview_repository(repo_url: str, output_dir: Path) -> PreviewFiles:
     html_preview = output_dir / "index.html"
 
     if output_dir.exists():
-        shutil.rmtree(output_dir)
+        _remove_output_dir(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     _clone_repository(repo_url, repository_dir)
@@ -54,6 +56,19 @@ def _clone_repository(repo_url: str, destination: Path) -> None:
     if result.returncode != 0:
         message = result.stderr.strip() or result.stdout.strip() or "git clone failed."
         raise RuntimeError(message)
+
+
+def _remove_output_dir(path: Path) -> None:
+    shutil.rmtree(path, onerror=_handle_remove_readonly)
+
+
+def _handle_remove_readonly(func: object, target: str, exc_info: tuple[type[BaseException], BaseException, object]) -> None:
+    error = exc_info[1]
+    if not isinstance(error, PermissionError):
+        raise error
+
+    os.chmod(target, stat.S_IWRITE)
+    func(target)
 
 
 def _write_preview_page(repo_url: str, generated: GeneratedFiles, destination: Path) -> None:

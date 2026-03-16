@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+import stat
 import subprocess
 
-from readme_god.preview import preview_repository
+from readme_god.preview import _remove_output_dir, preview_repository
 
 
 def test_preview_repository_clones_generates_and_builds_html(tmp_path: Path) -> None:
@@ -42,3 +43,16 @@ demo-preview = "demo:main"
     assert "README Preview" in html
     assert "markdown-en" in html
     assert "markdown-zh" in html
+
+
+def test_remove_output_dir_handles_readonly_files(tmp_path: Path) -> None:
+    preview_dir = tmp_path / "preview"
+    nested = preview_dir / "repo" / ".git" / "objects" / "pack"
+    nested.mkdir(parents=True)
+    readonly_file = nested / "pack.idx"
+    readonly_file.write_text("data", encoding="utf-8")
+    readonly_file.chmod(stat.S_IREAD)
+
+    _remove_output_dir(preview_dir)
+
+    assert not preview_dir.exists()
