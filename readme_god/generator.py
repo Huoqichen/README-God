@@ -20,6 +20,7 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
     badge_value = " | ".join(context.badge_values)
     encoded_license = quote(context.license_name, safe="")
     encoded_badge_value = quote(badge_value, safe="")
+    encoded_repo_slug = quote(context.repo_slug, safe="")
 
     return {
         "title": context.title,
@@ -43,6 +44,7 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
         "contributing_en": context.contributing_en,
         "contributing_zh": context.contributing_zh,
         "license_name": context.license_name,
+        "repo_slug_encoded": encoded_repo_slug,
         "stars_badge_url": f"https://img.shields.io/github/stars/{context.repo_slug}?style=flat-square",
         "stars_link_url": f"https://github.com/{context.repo_slug}/stargazers",
         "license_badge_url": f"https://img.shields.io/badge/license-{encoded_license}-2563eb?style=flat-square",

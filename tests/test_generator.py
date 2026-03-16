@@ -78,7 +78,8 @@ license: MIT
 
     assert '<a href="./docs/README.zh-CN.md">简体中文</a> | English' in readme_en
     assert '简体中文 | <a href="../README.md">English</a>' in readme_zh
-    assert "https://api.star-history.com/svg?repos=OWNER/REPO&type=Date" in readme_en
+    assert "https://www.star-history.com/?repos=OWNER%2FREPO&type=date&legend=top-left" in readme_en
+    assert "https://api.star-history.com/svg?repos=OWNER/REPO&type=date&legend=top-left" in readme_en
     assert "https://img.shields.io/github/stars/OWNER/REPO?style=flat-square" in readme_en
     assert "https://img.shields.io/badge/language-Python-6b7280?style=flat-square" in readme_en
     assert "简体中文</a> | English" in readme_en
