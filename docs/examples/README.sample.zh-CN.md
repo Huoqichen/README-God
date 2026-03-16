@@ -1,16 +1,14 @@
 # Sample Repo
 
-[English](./README.sample.md) | 简体中文
-
 <p align="center"><strong>用一个 CLI 把 Markdown 笔记构建成小型静态站点。</strong></p>
 <p align="center">一次编写，快速预览，干净发布。</p>
 <p align="center">
   <img src="https://img.shields.io/github/stars/OWNER/REPO?style=flat-square" alt="GitHub Stars">
   <img src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square" alt="License">
-  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280?style=flat-square" alt="Platform">
+  <img src="https://img.shields.io/badge/language-Python-6b7280?style=flat-square" alt="Language">
 </p>
 <p align="center">
-  简体中文 | 繁體中文 | Español | Deutsch | Français | 日本語
+  简体中文 | <a href="./README.sample.md">English</a>
 </p>
 
 ## 功能

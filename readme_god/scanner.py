@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-from readme_god.i18n import DEFAULT_CONTRIBUTING, DEFAULT_DESCRIPTION, DEFAULT_LICENSE, DEFAULT_PLATFORMS, DEFAULT_ROADMAP, DEFAULT_TAGLINE
+from readme_god.i18n import DEFAULT_CONTRIBUTING, DEFAULT_DESCRIPTION, DEFAULT_LANGUAGES, DEFAULT_LICENSE, DEFAULT_ROADMAP, DEFAULT_TAGLINE
 
 
 CONFIG_NAME = ".readme-god.yml"
@@ -31,7 +31,7 @@ class RepositoryContext:
     description_zh: str
     tagline: str
     tagline_zh: str
-    platforms: list[str]
+    languages: list[str]
     repo_slug: str
     cli_name: str | None
     features: list[str]
@@ -71,7 +71,8 @@ def scan_repository(repo_path: Path) -> RepositoryContext:
     description_zh = _pick_description_zh(config, description)
     tagline = _pick_tagline(config)
     tagline_zh = _pick_tagline_zh(config, tagline)
-    platforms = _pick_platforms(config)
+    detected_languages = _detect_languages(repo_path)
+    languages = _pick_languages(config, detected_languages)
     repo_slug = str(config.get("repo_slug") or git_slug or "OWNER/REPO")
     cli_name = str(config.get("cli_name") or _detect_cli_name(pyproject, package_json) or "").strip() or None
     features = _pick_features(repo_path, config, cli_name)
@@ -83,7 +84,6 @@ def scan_repository(repo_path: Path) -> RepositoryContext:
     roadmap_en, roadmap_zh = _pick_roadmap(config)
     contributing_en, contributing_zh = _pick_contributing(config)
     license_name = _pick_license(repo_path, config, pyproject)
-    detected_languages = _detect_languages(repo_path)
 
     return RepositoryContext(
         title=title,
@@ -91,7 +91,7 @@ def scan_repository(repo_path: Path) -> RepositoryContext:
         description_zh=description_zh,
         tagline=tagline,
         tagline_zh=tagline_zh,
-        platforms=platforms,
+        languages=languages,
         repo_slug=repo_slug,
         cli_name=cli_name,
         features=features,
@@ -125,7 +125,7 @@ def build_init_config(repo_path: Path) -> str:
         "description_zh": "",
         "tagline": "",
         "tagline_zh": "",
-        "platforms": DEFAULT_PLATFORMS,
+        "languages": [],
         "repo_slug": repo_slug,
         "cli_name": cli_name,
         "features": [
@@ -222,11 +222,13 @@ def _pick_tagline_zh(config: dict[str, Any], tagline: str) -> str:
     return mapping.get(tagline, tagline)
 
 
-def _pick_platforms(config: dict[str, Any]) -> list[str]:
-    platforms = _string_list(config.get("platforms"))
-    if platforms:
-        return platforms
-    return DEFAULT_PLATFORMS
+def _pick_languages(config: dict[str, Any], detected_languages: list[str]) -> list[str]:
+    configured = _string_list(config.get("languages"))
+    if configured:
+        return configured
+    if detected_languages:
+        return detected_languages[:3]
+    return DEFAULT_LANGUAGES
 
 
 def _pick_features(repo_path: Path, config: dict[str, Any], cli_name: str | None) -> list[str]:
@@ -407,6 +409,11 @@ def _detect_languages(repo_path: Path) -> list[str]:
         language = extensions.get(path.suffix)
         if language and language not in seen:
             seen.append(language)
+    if not seen:
+        if (repo_path / "pyproject.toml").exists():
+            seen.append("Python")
+        elif (repo_path / "package.json").exists():
+            seen.append("JavaScript")
     return seen
 
 

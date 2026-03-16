@@ -5,10 +5,6 @@ tagline: One command. Professional README.
 tagline_zh: 一条命令，专业 README。
 repo_slug: Huoqichen/README-God
 cli_name: readme-god
-platforms:
-  - Windows
-  - macOS
-  - Linux
 features:
   - Scan repo metadata and infer a clean README structure.
   - Generate README.md and docs/README.zh-CN.md together.

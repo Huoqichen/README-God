@@ -37,7 +37,7 @@ commands:
     assert context.title == "Demo App"
     assert context.description == "A clean demo."
     assert context.tagline == "Minimal setup. Clear project overview."
-    assert context.platforms == ["Cross-platform"]
+    assert context.languages == ["Python"]
     assert context.repo_slug == "acme/demo-app"
     assert context.features == ["Feature A"]
     assert context.commands[0].name == "demo run"
@@ -46,15 +46,13 @@ commands:
 def test_generate_readmes_writes_both_languages(tmp_path: Path) -> None:
     (tmp_path / ".readme-god.yml").write_text(
         """
-        title: Sample Repo
+title: Sample Repo
 description: Sample description.
 tagline: Short and sharp.
 repo_slug: OWNER/REPO
 cli_name: sample
-platforms:
-  - Windows
-  - macOS
-  - Linux
+languages:
+  - Python
 features:
   - Small and direct.
 installation:
@@ -77,12 +75,12 @@ license: MIT
     readme_en = generated.readme_en.read_text(encoding="utf-8")
     readme_zh = generated.readme_zh.read_text(encoding="utf-8")
 
-    assert "[简体中文](./docs/README.zh-CN.md)" in readme_en
-    assert "[English](../README.md)" in readme_zh
+    assert '<a href="./docs/README.zh-CN.md">简体中文</a> | English' in readme_en
+    assert '简体中文 | <a href="../README.md">English</a>' in readme_zh
     assert "https://api.star-history.com/svg?repos=OWNER/REPO&type=Date" in readme_en
     assert "https://img.shields.io/github/stars/OWNER/REPO?style=flat-square" in readme_en
-    assert "https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-6b7280?style=flat-square" in readme_en
-    assert "简体中文</a> | 繁體中文 | Español | Deutsch | Français | 日本語" in readme_en
+    assert "https://img.shields.io/badge/language-Python-6b7280?style=flat-square" in readme_en
+    assert "简体中文</a> | English" in readme_en
     assert "Sample Repo" in readme_en
     assert "Short and sharp." in readme_en
     assert "Welcome contributions." in readme_en
@@ -95,7 +93,7 @@ def test_build_template_context_serializes_commands() -> None:
         description_zh="简短描述。",
         tagline="Short tagline.",
         tagline_zh="简短副标题。",
-        platforms=["Windows", "macOS", "Linux"],
+        languages=["Python"],
         repo_slug="OWNER/REPO",
         cli_name="demo",
         features=["Fast"],

@@ -17,9 +17,9 @@ class GeneratedFiles:
 
 
 def build_template_context(context: RepositoryContext) -> dict[str, object]:
-    platform_label = " | ".join(context.platforms)
+    language_label = " | ".join(context.languages)
     encoded_license = quote(context.license_name, safe="")
-    encoded_platform = quote(platform_label, safe="")
+    encoded_language = quote(language_label, safe="")
 
     return {
         "title": context.title,
@@ -27,7 +27,7 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
         "description_zh": context.description_zh,
         "tagline": context.tagline,
         "tagline_zh": context.tagline_zh,
-        "platforms": context.platforms,
+        "languages": context.languages,
         "repo_slug": context.repo_slug,
         "cli_name": context.cli_name,
         "features": context.features,
@@ -44,7 +44,7 @@ def build_template_context(context: RepositoryContext) -> dict[str, object]:
         "stars_badge_url": f"https://img.shields.io/github/stars/{context.repo_slug}?style=flat-square",
         "stars_link_url": f"https://github.com/{context.repo_slug}/stargazers",
         "license_badge_url": f"https://img.shields.io/badge/license-{encoded_license}-2563eb?style=flat-square",
-        "platform_badge_url": f"https://img.shields.io/badge/platform-{encoded_platform}-6b7280?style=flat-square",
+        "language_badge_url": f"https://img.shields.io/badge/language-{encoded_language}-6b7280?style=flat-square",
     }
 
 
