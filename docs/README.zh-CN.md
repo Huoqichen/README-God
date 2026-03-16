@@ -14,7 +14,7 @@
 ## 功能
 - 扫描仓库元信息并推断清晰的 README 结构。
 - 同时生成 README.md 和 docs/README.zh-CN.md。
-- 输出简洁、模板化，便于继续调整。
+- 克隆 GitHub 仓库并生成适合演示的本地预览页。
 
 ## 安装
 ```bash
@@ -25,8 +25,9 @@ pip install -e .
 
 ## 使用
 ```bash
-readme-god init
-readme-god generate --repo .
+readme-god preview https://github.com/user/repo
+readme-god generate .
+open preview/index.html
 ```
 
 ## 命令行
@@ -34,7 +35,7 @@ readme-god generate --repo .
 | --- | --- |
 | `readme-god init` | 创建起始版 .readme-god.yml。 |
 | `readme-god generate` | 为当前仓库生成双语 README。 |
-| `readme-god generate --repo .` | 为指定仓库路径生成双语 README。 |
+| `readme-god preview <github_repo_url>` | 克隆 GitHub 仓库，生成 README，并构建本地预览页。 |
 
 ## 路线图
 - 改进仓库特征识别能力。

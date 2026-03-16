@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>README Preview - {{ repo_label }}</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --card: #ffffff;
+        --ink: #111827;
+        --muted: #5b6474;
+        --border: #d8dee9;
+        --accent: #2563eb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        color: var(--ink);
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      }
+
+      .shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px 56px;
+      }
+
+      .hero {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .hero h1 {
+        margin: 0 0 10px;
+        font-size: 34px;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .meta {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 24px 0 18px;
+      }
+
+      .tabs {
+        display: inline-flex;
+        gap: 10px;
+      }
+
+      .tab {
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 10px 16px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .tab.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .actions a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .preview {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+      }
+
+      .pane {
+        display: none;
+        padding: 28px;
+      }
+
+      .pane.active {
+        display: block;
+      }
+
+      .markdown-body {
+        max-width: 920px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      .markdown-body img {
+        max-width: 100%;
+      }
+
+      .markdown-body pre {
+        overflow-x: auto;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+
+      .markdown-body code {
+        font-family: "Cascadia Code", Consolas, monospace;
+      }
+
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .markdown-body th,
+      .markdown-body td {
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        text-align: left;
+      }
+
+      .markdown-body blockquote {
+        margin-left: 0;
+        padding-left: 16px;
+        border-left: 4px solid #cbd5e1;
+        color: var(--muted);
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          padding: 18px 12px 32px;
+        }
+
+        .hero,
+        .pane {
+          padding: 18px;
+        }
+
+        .hero h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <section class="hero">
+        <h1>README Preview</h1>
+        <p>Cloned, generated, and rendered locally for {{ repo_label }}.</p>
+        <div class="meta">
+          <a class="chip" href="{{ repo_url }}">{{ repo_url }}</a>
+          <span class="chip">{{ readme_en_path }}</span>
+          <span class="chip">{{ readme_zh_path }}</span>
+        </div>
+      </section>
+
+      <div class="toolbar">
+        <div class="tabs">
+          <button class="tab active" data-pane="en">English</button>
+          <button class="tab" data-pane="zh">简体中文</button>
+        </div>
+        <div class="actions">
+          <a href="./repo/README.md">Open README.md</a>
+          <a href="./repo/docs/README.zh-CN.md">Open README.zh-CN.md</a>
+        </div>
+      </div>
+
+      <section class="preview">
+        <div class="pane active" data-pane="en">
+          <article class="markdown-body" id="markdown-en"></article>
+        </div>
+        <div class="pane" data-pane="zh">
+          <article class="markdown-body" id="markdown-zh"></article>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      const docs = {
+        en: {{ readme_en_json }},
+        zh: {{ readme_zh_json }},
+      };
+
+      document.getElementById("markdown-en").innerHTML = marked.parse(docs.en);
+      document.getElementById("markdown-zh").innerHTML = marked.parse(docs.zh);
+
+      const tabs = document.querySelectorAll(".tab");
+      const panes = document.querySelectorAll(".pane");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.pane;
+
+          tabs.forEach((item) => item.classList.toggle("active", item === tab));
+          panes.forEach((pane) => pane.classList.toggle("active", pane.dataset.pane === target));
+        });
+      });
+    </script>
+  </body>
+</html>
+

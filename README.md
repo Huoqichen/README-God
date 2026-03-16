@@ -14,7 +14,7 @@
 ## Features
 - Scan repo metadata and infer a clean README structure.
 - Generate README.md and docs/README.zh-CN.md together.
-- Keep output concise, template-driven, and easy to refine.
+- Clone a GitHub repo and open a polished local preview page.
 
 ## Installation
 ```bash
@@ -25,8 +25,9 @@ pip install -e .
 
 ## Usage
 ```bash
-readme-god init
-readme-god generate --repo .
+readme-god preview https://github.com/user/repo
+readme-god generate .
+open preview/index.html
 ```
 
 ## CLI
@@ -34,7 +35,7 @@ readme-god generate --repo .
 | --- | --- |
 | `readme-god init` | Create a starter .readme-god.yml. |
 | `readme-god generate` | Generate bilingual README files for the current repository. |
-| `readme-god generate --repo .` | Generate bilingual README files for a specific repository path. |
+| `readme-god preview <github_repo_url>` | Clone a GitHub repository, generate README files, and build a local preview page. |
 
 ## Roadmap
 - Improve repo signal detection.

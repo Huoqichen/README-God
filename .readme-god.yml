@@ -8,32 +8,33 @@ cli_name: readme-god
 features:
   - Scan repo metadata and infer a clean README structure.
   - Generate README.md and docs/README.zh-CN.md together.
-  - Keep output concise, template-driven, and easy to refine.
+  - Clone a GitHub repo and open a polished local preview page.
 features_zh:
   - 扫描仓库元信息并推断清晰的 README 结构。
   - 同时生成 README.md 和 docs/README.zh-CN.md。
-  - 输出简洁、模板化，便于继续调整。
+  - 克隆 GitHub 仓库并生成适合演示的本地预览页。
 installation:
   - python -m venv .venv
   - .venv\Scripts\activate
   - pip install -e .
 usage:
-  - readme-god init
-  - readme-god generate --repo .
+  - readme-god preview https://github.com/user/repo
+  - readme-god generate .
+  - open preview/index.html
 commands:
   - name: readme-god init
     description: Create a starter .readme-god.yml.
   - name: readme-god generate
     description: Generate bilingual README files for the current repository.
-  - name: readme-god generate --repo .
-    description: Generate bilingual README files for a specific repository path.
+  - name: readme-god preview <github_repo_url>
+    description: Clone a GitHub repository, generate README files, and build a local preview page.
 commands_zh:
   - name: readme-god init
     description: 创建起始版 .readme-god.yml。
   - name: readme-god generate
     description: 为当前仓库生成双语 README。
-  - name: readme-god generate --repo .
-    description: 为指定仓库路径生成双语 README。
+  - name: readme-god preview <github_repo_url>
+    description: 克隆 GitHub 仓库，生成 README，并构建本地预览页。
 roadmap:
   - Improve repo signal detection.
   - Add more template customization points.

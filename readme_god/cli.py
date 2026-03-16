@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from readme_god.generator import generate_readmes
+from readme_god.preview import preview_repository
 from readme_god.scanner import CONFIG_NAME, build_init_config
 
 
@@ -20,6 +21,13 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 console = Console()
+
+
+def _resolve_repo_argument(repo: Path | None, repo_option: Path | None) -> Path:
+    if repo is not None and repo_option is not None and repo.resolve() != repo_option.resolve():
+        console.print("[red]REPO and --repo must point to the same directory.[/red]")
+        raise typer.Exit(code=1)
+    return (repo_option or repo or Path(".")).resolve()
 
 
 @app.command(short_help="Create starter config.")
@@ -58,18 +66,27 @@ def init(
 
 @app.command(short_help="Generate bilingual README files.")
 def generate(
-    repo: Path = typer.Option(
-        Path("."),
+    repo: Path | None = typer.Argument(
+        None,
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+        metavar="[REPO]",
+    ),
+    repo_option: Path | None = typer.Option(
+        None,
         "--repo",
         exists=True,
         file_okay=False,
         dir_okay=True,
         resolve_path=True,
-        help="Repository to scan. Defaults to the current directory.",
+        help="Repository to scan. Same as the positional REPO argument.",
     ),
 ) -> None:
     """Generate README.md and docs/README.zh-CN.md."""
-    generated = generate_readmes(repo.resolve())
+    repo_path = _resolve_repo_argument(repo, repo_option)
+    generated = generate_readmes(repo_path)
     console.print(
         Panel.fit(
             "\n".join(
@@ -79,6 +96,40 @@ def generate(
                 ]
             ),
             title="Generated",
+        )
+    )
+
+
+@app.command(short_help="Clone a repo and build a local preview.")
+def preview(
+    github_repo_url: str = typer.Argument(..., help="GitHub repository URL to preview."),
+    out: Path = typer.Option(
+        Path("preview"),
+        "--out",
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+        help="Output directory for the cloned repo and preview page.",
+    ),
+) -> None:
+    """Clone a GitHub repository, generate README files, and build a local preview."""
+    try:
+        preview_files = preview_repository(github_repo_url, out)
+    except RuntimeError as exc:
+        console.print(f"[red]Preview failed:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+    console.print(
+        Panel.fit(
+            "\n".join(
+                [
+                    f"Cloned: {preview_files.repository}",
+                    f"Wrote: {preview_files.readme_en}",
+                    f"Wrote: {preview_files.readme_zh}",
+                    f"Open:  {preview_files.html_preview}",
+                ]
+            ),
+            title="Preview Ready",
         )
     )
 
